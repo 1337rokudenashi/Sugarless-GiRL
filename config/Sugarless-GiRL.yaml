@@ -1,0 +1,66 @@
+# config/Sugarless-GiRL.yaml
+# ────────────────────────────────────────────────
+
+# ── target ──────────────────────────────────────
+target: "example.com"
+
+scope:
+  in_scope:
+    - "example.com"
+    - "*.example.com"
+
+  out_of_scope:
+    - "blog.example.com"
+    - "docs.example.com"
+
+
+# ── workspace ───────────────────────────────────
+workspace: "workspace"
+
+
+# ── burp mcp ────────────────────────────────────
+burp_mcp:
+  enabled: true
+  endpoint: "http://127.0.0.1:9876"
+
+
+# ── security tools ───────────────────────────────
+tools:
+  subfinder:
+    enabled: true
+
+  dnsx:
+    enabled: true
+
+  naabu:
+    enabled: true
+
+  httpx:
+    enabled: true
+
+  urlfinder:
+    enabled: true
+
+  katana:
+    enabled: true
+
+  nuclei:
+    enabled: true
+  
+  burpsuite:
+    enabled: true
+
+  sqlmap:
+    enabled: true
+
+  commix:
+    enabled: true
+
+  dalfox:
+    enabled: true
+
+
+# ── utilities ───────────────────────────────────
+utilities:
+  glow:
+    enabled: true

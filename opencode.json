@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "Sugarless-GiRL.md"
+  ],
+  "mcp": {
+    "burp": {
+      "type": "remote",
+      "url": "http://127.0.0.1:9876",
+      "enabled": true
+    }
+  }
+}
