@@ -37,76 +37,53 @@ function Sugarless_GiRL() {
     path=$(realpath "$0")
     [[ "$path" != "$bash" ]] && mkdir -p "$HOME/.local/bin" && cp "$path" "$bash" && chmod +x "$bash"
 
-    if ! grep -q "export PATH=\$HOME/.local/bin:\$PATH" ~/.profile; then
-        echo "export PATH=\$HOME/.local/bin:\$PATH" >> ~/.profile
+    if ! grep -Fqx 'export PATH="$HOME/.local/bin:$PATH"' ~/.bashrc; then
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
     fi
 
-    node_version=$(node -v 2>/dev/null | sed 's/v//')
-    required_node_version="24.22.1"
-
-    if [[ -z "$node_version" ]] || [[ "$(printf '%s\n' "$node_version" "$required_node_version" | sort -V | tail -n1)" != "$node_version" ]]; then
-        echo "nodejs.org node-v$required_node_version-linux-x64.tar.xz"
-
-        wget -q https://nodejs.org/dist/v24.22.1/node-v24.22.1-linux-x64.tar.xz -O /tmp/node.tar.xz || { echo "see https://nodejs.org/en/download"; exit 1; }
-        rm -rf "$home/node" 2>/dev/null
-        mkdir -p "$home/node"
-        tar -C "$home/node" --strip-components=1 -xf /tmp/node.tar.xz || { echo "see https://nodejs.org/en/download"; exit 1; }
-        rm -rf /tmp/node.tar.xz
-
-        export PATH="$home/node/bin:$PATH"
-
-        if ! grep -q "export PATH=\$HOME/Sugarless-GiRL/Sugarless-GiRL/node/bin:\$PATH" ~/.profile; then
-            echo "export PATH=\$HOME/Sugarless-GiRL/Sugarless-GiRL/node/bin:\$PATH" >> ~/.profile
-        fi
-    fi
-    
-    go_version=$(go version 2>/dev/null | awk '{print $3}' | sed 's/go//')
+    export GOROOT="$home/go-sdk"
+    go_version=$("$home/go-sdk/bin/go" version 2>/dev/null | awk '{print $3}' | sed 's/go//')
     required_go_version="1.27.3"
 
     if [[ -z "$go_version" ]] || [[ "$(printf '%s\n' "$go_version" "$required_go_version" | sort -V | tail -n1)" != "$go_version" ]]; then
         echo "go.dev go$required_go_version.linux-amd64.tar.gz"
 
         wget -q https://go.dev/dl/go1.27.3.linux-amd64.tar.gz -O /tmp/go.tar.gz || { echo "see https://go.dev/doc/install"; exit 1; }
-        rm -rf "$home/go" 2>/dev/null
-        mkdir -p "$home/go"
-        tar -C "$home/go" --strip-components=1 -xzf /tmp/go.tar.gz || { echo "see https://go.dev/doc/install"; exit 1; }
+        rm -rf "$home/go-sdk" 2>/dev/null
+        mkdir -p "$home/go-sdk"
+        tar -C "$home/go-sdk" --strip-components=1 -xzf /tmp/go.tar.gz || { echo "see https://go.dev/doc/install"; exit 1; }
         rm -rf /tmp/go.tar.gz
-
-        export GOROOT="$home/go"
-        export GOPATH="$home/go/env"
-        export PATH=$GOROOT/bin:$GOPATH/bin:$PATH
-
-        if ! grep -q "export GOROOT=\$HOME/Sugarless-GiRL/Sugarless-GiRL/go" ~/.profile; then
-            echo "export GOROOT=\$HOME/Sugarless-GiRL/Sugarless-GiRL/go" >> ~/.profile
-        fi
-        if ! grep -q "export GOPATH=\$HOME/Sugarless-GiRL/Sugarless-GiRL/go/env" ~/.profile; then
-            echo "export GOPATH=\$HOME/Sugarless-GiRL/Sugarless-GiRL/go/env" >> ~/.profile
-        fi
-        if ! grep -q "export PATH=\$GOROOT/bin:\$PATH" ~/.profile; then
-            echo "export PATH=\$GOROOT/bin:\$PATH" >> ~/.profile
-        fi
     fi
 
-    export GOPATH="$home/go/env"
-    if [[ -x "$home/go/bin/go" ]]; then
-        export GOROOT="$home/go"
-        export PATH="$GOROOT/bin:$PATH"
+    go_version=$("$home/go-sdk/bin/go" version 2>/dev/null | awk '{print $3}' | sed 's/go//')
+    if [[ -z "$go_version" ]] || [[ "$(printf '%s\n' "$go_version" "$required_go_version" | sort -V | tail -n1)" != "$go_version" ]]; then
+        echo "see https://go.dev/doc/install"
+        exit 1
     fi
-    export PATH="$GOPATH/bin:$PATH"
+
+    if ! grep -Fqx 'export GOROOT="$HOME/Sugarless-GiRL/Sugarless-GiRL/go-sdk"' ~/.bashrc; then
+        echo 'export GOROOT="$HOME/Sugarless-GiRL/Sugarless-GiRL/go-sdk"' >> ~/.bashrc
+    fi
+    if ! grep -Fqx 'export GOPATH="$GOROOT/Sugarless-GiRL"' ~/.bashrc; then
+        echo 'export GOPATH="$GOROOT/Sugarless-GiRL"' >> ~/.bashrc
+    fi
+    if ! grep -Fqx 'export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"' ~/.bashrc; then
+        echo 'export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"' >> ~/.bashrc
+    fi
+
+    export GOROOT="$home/go-sdk"
+    export GOPATH="$GOROOT/Sugarless-GiRL"
+    export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"
     mkdir -p "$GOPATH/bin" "$GOPATH/src" "$GOPATH/pkg"
 
-    if ! grep -q "export PATH=\$HOME/Sugarless-GiRL/Sugarless-GiRL/go/env/bin:\$PATH" ~/.profile; then
-        echo "export PATH=\$HOME/Sugarless-GiRL/Sugarless-GiRL/go/env/bin:\$PATH" >> ~/.profile
-    fi
-
-    go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-    go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
-    go install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
-    go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
-    go install -v github.com/projectdiscovery/urlfinder/cmd/urlfinder@latest
-    go install github.com/projectdiscovery/katana/cmd/katana@latest
-    go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
-    go install github.com/charmbracelet/glow@latest
+    "$GOROOT/bin/go" install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
+    "$GOROOT/bin/go" install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+    "$GOROOT/bin/go" install -v github.com/projectdiscovery/naabu/v2/cmd/naabu@latest
+    "$GOROOT/bin/go" install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
+    "$GOROOT/bin/go" install -v github.com/projectdiscovery/urlfinder/cmd/urlfinder@latest
+    "$GOROOT/bin/go" install github.com/projectdiscovery/katana/cmd/katana@latest
+    "$GOROOT/bin/go" install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+    "$GOROOT/bin/go" install github.com/charmbracelet/glow@latest
 
     export PATH="$HOME/.bun/bin:$PATH"
 
