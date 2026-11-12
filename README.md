@@ -11,7 +11,7 @@
 
 Sugarless-GiRL is a security researcher · security engineer AI agent - 11 security tools, Burp MCP, YAML-configured targets and scopes, vulnerability taxonomy, bounty research priorities, and PoC writeups.
 
-<img src="Sugarless-GiRL.png" width="600" alt="Sugarless-GiRL">
+<img src="images/Sugarless-GiRL.png" width="600" alt="Sugarless-GiRL">
 
 </div>
 
