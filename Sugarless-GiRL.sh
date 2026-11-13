@@ -107,10 +107,12 @@ function Sugarless_GiRL() {
     "Sugarless-GiRL.md"
   ],
   "mcp": {
-    "burp": {
-      "type": "remote",
-      "url": "http://127.0.0.1:9876",
-      "enabled": true
+    "servers": {
+      "burp": {
+        "type": "remote",
+        "url": "http://127.0.0.1:9876/mcp",
+        "disabled": false
+      }
     }
   }
 }
