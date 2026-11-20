@@ -94,45 +94,34 @@ function Sugarless_GiRL() {
         fi
     fi
 
+    if ! command -v pi >/dev/null 2>&1; then
+        echo "bun add -g --ignore-scripts @earendil-works/pi-coding-agent"
+        if ! bun add -g --ignore-scripts @earendil-works/pi-coding-agent; then
+            echo "see https://docs.pi.dev/latest"
+            exit 1
+        fi
+    fi
+
     if ! command -v opencode >/dev/null 2>&1; then
         echo "bun install -g --trust @opencode/cli"
         bun install -g --trust @opencode/cli || { echo "see https://opencode.ai/docs"; exit 1; }
     fi
 
-    mkdir -p "$HOME/Sugarless-GiRL" || { echo "see https://opencode.ai/docs"; exit 1; }
-    cat <<'EOF' > "$HOME/Sugarless-GiRL/opencode.json"
-{
-  "$schema": "https://opencode.ai/config.json",
-  "instructions": [
-    "Sugarless-GiRL.md"
-  ],
-  "mcp": {
-    "servers": {
-      "burp": {
-        "type": "remote",
-        "url": "http://127.0.0.1:9876/mcp",
-        "disabled": false
-      }
-    }
-  }
-}
-EOF
-    if [[ $? -ne 0 ]]; then
-        echo "see https://opencode.ai/docs"
-        exit 1
-    fi
-
-    echo ""
     echo "Sugarless-GiRL executed."
     echo ""
-    echo "Model Context Protocol (MCP):"
+    echo "Burp MCP Server"
     echo "  $ burpsuite"
     echo "  mcp-server"
-    echo "  MCP at http://127.0.0.1:9876"
-    echo "  $ opencode"
+    echo "  http://127.0.0.1:9876"
+    echo ""
+    echo "AI Agents"
+    echo "  $ pi / opencode"
+    echo ""
+    echo "Docs"
+    echo "  https://docs.pi.dev/latest"
+    echo "  https://opencode.ai/docs"
     echo ""
     echo "Burp MCP must be active."
-    echo ""
 
 }
 if [[ -n $1 ]]; then
