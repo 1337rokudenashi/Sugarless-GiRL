@@ -32,7 +32,7 @@ function Sugarless_GiRL() {
     fi
 
     local Sugarless_GiRL="$HOME/Sugarless-GiRL"
-    local home="$HOME/Sugarless-GiRL/Sugarless-GiRL"
+    local home="$HOME/Sugarless-GiRL/.pkg"
     local bash="$HOME/.local/bin/Sugarless-GiRL"
     path=$(realpath "$0")
     [[ "$path" != "$bash" ]] && mkdir -p "$HOME/.local/bin" && cp "$path" "$bash" && chmod +x "$bash"
@@ -41,28 +41,28 @@ function Sugarless_GiRL() {
         echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
     fi
 
-    export GOROOT="$home/go-sdk"
-    go_version=$("$home/go-sdk/bin/go" version 2>/dev/null | awk '{print $3}' | sed 's/go//')
+    export GOROOT="$home/go"
+    go_version=$("$home/go/bin/go" version 2>/dev/null | awk '{print $3}' | sed 's/go//')
     required_go_version="1.27.3"
 
     if [[ -z "$go_version" ]] || [[ "$(printf '%s\n' "$go_version" "$required_go_version" | sort -V | tail -n1)" != "$go_version" ]]; then
         echo "go.dev go$required_go_version.linux-amd64.tar.gz"
 
         wget -q https://go.dev/dl/go1.27.3.linux-amd64.tar.gz -O /tmp/go.tar.gz || { echo "see https://go.dev/doc/install"; exit 1; }
-        rm -rf "$home/go-sdk" 2>/dev/null
-        mkdir -p "$home/go-sdk"
-        tar -C "$home/go-sdk" --strip-components=1 -xzf /tmp/go.tar.gz || { echo "see https://go.dev/doc/install"; exit 1; }
+        rm -rf "$home/go" 2>/dev/null
+        mkdir -p "$home/go"
+        tar -C "$home/go" --strip-components=1 -xzf /tmp/go.tar.gz || { echo "see https://go.dev/doc/install"; exit 1; }
         rm -rf /tmp/go.tar.gz
     fi
 
-    go_version=$("$home/go-sdk/bin/go" version 2>/dev/null | awk '{print $3}' | sed 's/go//')
+    go_version=$("$home/go/bin/go" version 2>/dev/null | awk '{print $3}' | sed 's/go//')
     if [[ -z "$go_version" ]] || [[ "$(printf '%s\n' "$go_version" "$required_go_version" | sort -V | tail -n1)" != "$go_version" ]]; then
         echo "see https://go.dev/doc/install"
         exit 1
     fi
 
-    if ! grep -Fqx 'export GOROOT="$HOME/Sugarless-GiRL/Sugarless-GiRL/go-sdk"' ~/.bashrc; then
-        echo 'export GOROOT="$HOME/Sugarless-GiRL/Sugarless-GiRL/go-sdk"' >> ~/.bashrc
+    if ! grep -Fqx 'export GOROOT="$HOME/Sugarless-GiRL/.pkg/go"' ~/.bashrc; then
+        echo 'export GOROOT="$HOME/Sugarless-GiRL/.pkg/go"' >> ~/.bashrc
     fi
     if ! grep -Fqx 'export GOPATH="$GOROOT/Sugarless-GiRL"' ~/.bashrc; then
         echo 'export GOPATH="$GOROOT/Sugarless-GiRL"' >> ~/.bashrc
@@ -71,7 +71,7 @@ function Sugarless_GiRL() {
         echo 'export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"' >> ~/.bashrc
     fi
 
-    export GOROOT="$home/go-sdk"
+    export GOROOT="$home/go"
     export GOPATH="$GOROOT/Sugarless-GiRL"
     export PATH="$GOROOT/bin:$GOPATH/bin:$PATH"
     mkdir -p "$GOPATH/bin" "$GOPATH/src" "$GOPATH/pkg"
@@ -134,6 +134,7 @@ function Sugarless_GiRL() {
 
 }
 Sugarless_GiRL
+source "$HOME/.bashrc"
 cd "$HOME/Sugarless-GiRL" || exit 1
 sleep 5
 exec bun run "$HOME/.bun/bin/pi"
