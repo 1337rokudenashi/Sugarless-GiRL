@@ -94,17 +94,27 @@ function Sugarless_GiRL() {
         fi
     fi
 
-    if ! command -v pi >/dev/null 2>&1; then
+    if ! grep -Fqx 'export PATH="$HOME/.bun/bin:$PATH"' ~/.bashrc; then
+        echo 'export PATH="$HOME/.bun/bin:$PATH"' >> ~/.bashrc
+    fi
+
+    if ! grep -Eq '^[[:space:]]*(function[[:space:]]+)?pi[[:space:]]*(\(\))?[[:space:]]*\{' ~/.bashrc; then
+        echo 'function pi() {' >> ~/.bashrc
+        echo '    bun run "$HOME/.bun/bin/pi" "$@"' >> ~/.bashrc
+        echo '}' >> ~/.bashrc
+    fi
+
+    if ! bun run "$HOME/.bun/bin/pi" --version >/dev/null 2>&1; then
         echo "bun add -g --ignore-scripts @earendil-works/pi-coding-agent"
         if ! bun add -g --ignore-scripts @earendil-works/pi-coding-agent; then
             echo "see https://docs.pi.dev/latest"
             exit 1
         fi
-    fi
 
-    if ! command -v opencode >/dev/null 2>&1; then
-        echo "bun install -g --trust @opencode/cli"
-        bun install -g --trust @opencode/cli || { echo "see https://opencode.ai/docs"; exit 1; }
+        if ! bun run "$HOME/.bun/bin/pi" --version >/dev/null 2>&1; then
+            echo "see https://docs.pi.dev/latest"
+            exit 1
+        fi
     fi
 
     echo "Sugarless-GiRL executed."
@@ -114,21 +124,16 @@ function Sugarless_GiRL() {
     echo "  mcp-server"
     echo "  http://127.0.0.1:9876"
     echo ""
-    echo "AI Agents"
-    echo "  $ pi / opencode"
+    echo "Pi · Sugarless-GiRL"
+    echo "  $ Sugarless-GiRL"
     echo ""
     echo "Docs"
     echo "  https://docs.pi.dev/latest"
-    echo "  https://opencode.ai/docs"
     echo ""
     echo "Burp MCP must be active."
 
 }
-if [[ -n $1 ]]; then
-    Sugarless_GiRL
-    exec "$@"
-else
-    [[ -z $1 ]] && Sugarless_GiRL
-    [[ -z $1 ]] && exec bash -l
-    exit 0
-fi
+Sugarless_GiRL
+cd "$HOME/Sugarless-GiRL" || exit 1
+sleep 5
+exec bun run "$HOME/.bun/bin/pi"

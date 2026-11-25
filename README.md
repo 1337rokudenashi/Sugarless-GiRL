@@ -26,7 +26,7 @@ chmod +x Sugarless-GiRL.sh
 
 ## Usage
 
-Open Pi / OpenCode and execute:
+Open Pi · Sugarless-GiRL and execute:
 
 ```text
 execute Sugarless-GiRL
