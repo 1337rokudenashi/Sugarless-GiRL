@@ -41,6 +41,35 @@ function Sugarless_GiRL() {
         echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
     fi
 
+    node_version=$("$home/node/bin/node" --version 2>/dev/null | sed 's/^v//')
+    required_node_version="26.13.1"
+
+    if [[ -z "$node_version" ]] || [[ "$(printf '%s\n' "$node_version" "$required_node_version" | sort -V | tail -n1)" != "$node_version" ]]; then
+        echo "nodejs.org node-v$required_node_version-linux-x64.tar.xz"
+
+        wget -q "https://nodejs.org/dist/v$required_node_version/node-v$required_node_version-linux-x64.tar.xz" -O /tmp/node.tar.xz || { echo "see https://nodejs.org/en/download"; exit 1; }
+        rm -rf "$home/node" 2>/dev/null
+        mkdir -p "$home/node"
+        tar -C "$home/node" --strip-components=1 -xJf /tmp/node.tar.xz || { echo "see https://nodejs.org/en/download"; exit 1; }
+        rm -rf /tmp/node.tar.xz
+    fi
+
+    node_version=$("$home/node/bin/node" --version 2>/dev/null | sed 's/^v//')
+    if [[ -z "$node_version" ]] || [[ "$(printf '%s\n' "$node_version" "$required_node_version" | sort -V | tail -n1)" != "$node_version" ]] || [[ ! -x "$home/node/bin/npm" ]]; then
+        echo "see https://nodejs.org/en/download"
+        exit 1
+    fi
+
+    if ! grep -Fqx 'export NODE_HOME="$HOME/Sugarless-GiRL/.pkg/node"' ~/.bashrc; then
+        echo 'export NODE_HOME="$HOME/Sugarless-GiRL/.pkg/node"' >> ~/.bashrc
+    fi
+    if ! grep -Fqx 'export PATH="$NODE_HOME/bin:$PATH"' ~/.bashrc; then
+        echo 'export PATH="$NODE_HOME/bin:$PATH"' >> ~/.bashrc
+    fi
+
+    export NODE_HOME="$home/node"
+    export PATH="$NODE_HOME/bin:$PATH"
+
     export GOROOT="$home/go"
     go_version=$("$home/go/bin/go" version 2>/dev/null | awk '{print $3}' | sed 's/go//')
     required_go_version="1.27.3"
